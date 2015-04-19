@@ -21,11 +21,11 @@ public class ReliableUDPClient {
 
     private BlockingQueue<DataPacket> responsePackets = new ArrayBlockingQueue<>(10);
     private BlockingQueue<DataPacket> ackPackets = new ArrayBlockingQueue<>(10);
-    private InetAddress serverAddress;
-    private int serverPort;
-    private DatagramSocket socket;
-    private volatile boolean connectionIsOpen = false;
-    private int connectionId = 0;
+    protected InetAddress serverAddress;
+    protected int serverPort;
+    protected DatagramSocket socket;
+    protected volatile boolean connectionIsOpen = false;
+    protected int connectionId = 0;
     private long seq = 0;
 
     public ReliableUDPClient(InetAddress serverAddress, int serverPort) {
@@ -64,7 +64,7 @@ public class ReliableUDPClient {
 
     }
 
-    private void createSocket() {
+    protected void createSocket() {
         Thread thread = new Thread(new ClientTask(socket) {
             @Override
             public void run() {

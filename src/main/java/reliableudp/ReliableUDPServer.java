@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ReliableUDPServer {
 
     private int port;
-    private Map<Integer, Connection> clients = new ConcurrentHashMap<>();
-    private ConnectionHandler connectionHandler;
-    private DatagramSocket socket;
+    protected Map<Integer, Connection> clients = new ConcurrentHashMap<>();
+    protected ConnectionHandler connectionHandler;
+    protected DatagramSocket socket;
 
     public ReliableUDPServer(int port) throws SocketException {
         socket = new DatagramSocket(port);
@@ -38,7 +38,7 @@ public class ReliableUDPServer {
                     //when received create new session whit new Thread.
                     System.out.println("new request...");
                     if (packet.getConnection() == 0)
-                        createNewConnection(request.getAddress(), request.getPort());
+                        createNewConnection(request.getAddress(), request.getPort(), packet);
                     else sendToConnection(packet);
 
                 } catch (IOException e) {
@@ -69,7 +69,7 @@ public class ReliableUDPServer {
         return request;
     }
 
-    private void createNewConnection(InetAddress address, int port) {
+    protected void createNewConnection(InetAddress address, int port, DataPacket packet) {
         Random random = new Random();
         final int[] connectionId = new int[1];
         Connection connection = new Connection(socket, address, port);
@@ -92,7 +92,7 @@ public class ReliableUDPServer {
 
     }
 
-    private void sendConnectionAccept(InetAddress address, int port, int connectionId) {
+    protected void sendConnectionAccept(InetAddress address, int port, int connectionId) {
 
         try {
             DataPacket dataPacket = new DataPacket(0, 0, connectionId, null);

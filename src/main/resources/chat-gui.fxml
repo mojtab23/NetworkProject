@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.client.Controller">
+    <top>
+        <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connect" text="Connect" BorderPane.alignment="CENTER">
+            <graphic>
+                <TextField fx:id="userName" onAction="#connect" />
+            </graphic>
+        </Button>
+    </top>
+    <bottom>
+        <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <TextArea fx:id="textInput" prefHeight="200.0" prefWidth="569.0" />
+                <Button fx:id="send" mnemonicParsing="false" onAction="#send" text="Send" />
+            <Label fx:id="status" text="status" />
+            </children>
+        </FlowPane>
+    </bottom>
+    <left>
+        <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="addToChat" mnemonicParsing="false" text="add to Chat" />
+                <Label text="Offlines" />
+                <ListView fx:id="offlines" prefHeight="200.0" prefWidth="200.0" />
+            </children>
+        </FlowPane>
+    </left>
+    <right>
+        <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="removeFromChat" mnemonicParsing="false" text="remove from Chat" />
+                <Label text="Onlines" />
+                <ListView fx:id="onlines" prefHeight="200.0" prefWidth="200.0" />
+            </children>
+        </FlowPane>
+    </right>
+    <center>
+        <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <content>
+                <Pane prefHeight="200.0" prefWidth="200.0">
+                    <children>
+                        <ListView fx:id="history" prefHeight="369.0" prefWidth="400.0" />
+                    </children>
+                </Pane>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
