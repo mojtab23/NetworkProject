@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/pom.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/FTPClient.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/main/java/FTPServer.java" charset="windows-1252" />
   </component>
 </project>

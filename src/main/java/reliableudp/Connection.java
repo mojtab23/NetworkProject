@@ -25,6 +25,7 @@ public class Connection {
     private DatagramSocket socket;
     private BlockingQueue<DataPacket> responsePackets = new ArrayBlockingQueue<>(10);
     private BlockingQueue<DataPacket> ackPackets = new ArrayBlockingQueue<>(10);
+    private long seq;
 
     public Connection(DatagramSocket socket, InetAddress address, int port) {
         this.socket = socket;
@@ -70,7 +71,7 @@ public class Connection {
 //
 //    }
 
-     void put(DataPacket packet) {
+    void put(DataPacket packet) {
         try {
             if (packet.getSize() == -1) ackPackets.put(packet);
             else responsePackets.put(packet);
@@ -109,7 +110,7 @@ public class Connection {
         int dataSize = DataPacket.DATA_SIZE;  // chunk size
         int len = bytes.length;
         int size = len / dataSize;
-
+        seq = 0;
 
         for (int i = 0; i < len - dataSize + 1; i += dataSize)
             sendReliable(Arrays.copyOfRange(bytes, i, i + dataSize), size);
@@ -120,7 +121,6 @@ public class Connection {
     }
 
     private void sendReliable(byte[] out, int chunkSize) throws Exception {
-        long seq = 0;
         DataPacket dataPacket = new DataPacket(seq, chunkSize,
                 connectionId, out);
         DatagramPacket request = new DatagramPacket(dataPacket.getBytes(),
@@ -129,7 +129,7 @@ public class Connection {
         do {
             socket.send(request);
             poll = ackPackets.poll(15, TimeUnit.MILLISECONDS);
-        } while (poll.getSeq() != seq);
+        } while (poll == null || poll.getSeq() != seq);
         seq++;
     }
 

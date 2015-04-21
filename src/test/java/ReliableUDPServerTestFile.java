@@ -32,7 +32,7 @@ public class ReliableUDPServerTestFile {
                                             try {
                                                 // write the inputStream to a FileOutputStream
                                                 outputStream =
-                                                        new FileOutputStream(new File("E:\\tamrin\\Intellij\\MojtabaFileManager\\UDP\\src\\test\\java\\plain2_2.jpg"));
+                                                        new FileOutputStream(new File("E:\\tamrin\\Intellij\\NetworkProject\\src\\test\\java\\plain2-1.jpg"));
 
                                                 int read = 0;
                                                 byte[] bytes = new byte[1024];

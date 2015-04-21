@@ -19,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 public class ReliableUDPClient {
 
 
-    private BlockingQueue<DataPacket> responsePackets = new ArrayBlockingQueue<>(10);
-    private BlockingQueue<DataPacket> ackPackets = new ArrayBlockingQueue<>(10);
     protected InetAddress serverAddress;
     protected int serverPort;
     protected DatagramSocket socket;
     protected volatile boolean connectionIsOpen = false;
     protected int connectionId = 0;
+    private BlockingQueue<DataPacket> responsePackets = new ArrayBlockingQueue<>(10);
+    private BlockingQueue<DataPacket> ackPackets = new ArrayBlockingQueue<>(10);
     private long seq = 0;
 
     public ReliableUDPClient(InetAddress serverAddress, int serverPort) {
@@ -42,7 +42,7 @@ public class ReliableUDPClient {
             DatagramPacket request = new DatagramPacket(connectPacket.getBytes(),
                     connectPacket.getLimit(), serverAddress, serverPort);
 
-            socket.setSoTimeout(0);
+            socket.setSoTimeout(15);
             while (!connectionIsOpen) {
                 socket.send(request);
 
@@ -113,8 +113,8 @@ public class ReliableUDPClient {
         DataPacket poll;
         do {
             socket.send(request);
-            poll = ackPackets.poll(15, TimeUnit.MINUTES);
-        } while (poll.getSeq() != seq);
+            poll = ackPackets.poll(15, TimeUnit.MILLISECONDS);
+        } while (poll == null || poll.getSeq() != seq);
         seq++;
     }
 

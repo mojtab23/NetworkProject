@@ -7,15 +7,16 @@ import reliableudp.ReliableUDPServer;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Mojtaba on 3/29/2015.
  */
 public class ReliableUDPChatServer extends ReliableUDPServer {
 
-    HashMap<String, User> users = new HashMap<>();
+    ConcurrentHashMap<String, User> users = new ConcurrentHashMap<>();
+    ConnectionHandlerChat connectionHandler;
 
     public ReliableUDPChatServer(int port) throws SocketException {
         super(port);
@@ -40,7 +41,8 @@ public class ReliableUDPChatServer extends ReliableUDPServer {
             while ((connectionId[0] = random.nextInt(Integer.MAX_VALUE)) == 0 || clients.containsKey(connectionId[0])) ;
             connection.setConnectionId(connectionId[0]);
             clients.put(connectionId[0], connection);
-            connectionHandler.handleConnection(connection);
+            users.put(userName, new User(connection));
+            connectionHandler.handleConnection(connection, users,userName);
         }
 
         sendConnectionAccept(address, port, connectionId[0]);
@@ -61,6 +63,10 @@ public class ReliableUDPChatServer extends ReliableUDPServer {
             e.printStackTrace();
         }
 
+    }
+
+    public void setConnectionHandler(ConnectionHandlerChat connectionHandler) {
+        this.connectionHandler = connectionHandler;
     }
 
 

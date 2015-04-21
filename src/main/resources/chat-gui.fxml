@@ -1,53 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.client.Controller">
-    <top>
-        <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connect" text="Connect" BorderPane.alignment="CENTER">
-            <graphic>
-                <TextField fx:id="userName" onAction="#connect" />
-            </graphic>
-        </Button>
-    </top>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.client.Controller">
     <bottom>
-        <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <FlowPane prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
-                <TextArea fx:id="textInput" prefHeight="200.0" prefWidth="569.0" />
-                <Button fx:id="send" mnemonicParsing="false" onAction="#send" text="Send" />
-            <Label fx:id="status" text="status" />
+            <TextField fx:id="textInput" onAction="#send" prefHeight="25.0" prefWidth="400.0">
+               <FlowPane.margin>
+                  <Insets left="20.0" top="10.0" />
+               </FlowPane.margin>
+            </TextField>
+                <Button fx:id="send" mnemonicParsing="false" onAction="#send" text="Send">
+               <FlowPane.margin>
+                  <Insets left="10.0" top="10.0" />
+               </FlowPane.margin></Button>
+            <Label fx:id="status" text="status">
+               <FlowPane.margin>
+                  <Insets left="20.0" top="10.0" />
+               </FlowPane.margin></Label>
             </children>
         </FlowPane>
     </bottom>
-    <left>
-        <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <children>
-                <Button fx:id="addToChat" mnemonicParsing="false" text="add to Chat" />
-                <Label text="Offlines" />
-                <ListView fx:id="offlines" prefHeight="200.0" prefWidth="200.0" />
-            </children>
-        </FlowPane>
-    </left>
-    <right>
-        <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <children>
-                <Button fx:id="removeFromChat" mnemonicParsing="false" text="remove from Chat" />
-                <Label text="Onlines" />
-                <ListView fx:id="onlines" prefHeight="200.0" prefWidth="200.0" />
-            </children>
-        </FlowPane>
-    </right>
-    <center>
-        <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <content>
-                <Pane prefHeight="200.0" prefWidth="200.0">
-                    <children>
-                        <ListView fx:id="history" prefHeight="369.0" prefWidth="400.0" />
-                    </children>
-                </Pane>
-            </content>
-        </ScrollPane>
-    </center>
+   <top>
+      <FlowPane prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connect" prefWidth="220.0" text="Connect">
+               <graphic>
+                  <TextField fx:id="userName" onAction="#connect" />
+               </graphic>
+               <FlowPane.margin>
+                  <Insets left="20.0" top="20.0" />
+               </FlowPane.margin>
+            </Button>
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </FlowPane>
+   </top>
+   <center>
+      <FlowPane prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshUsers" prefWidth="60.0" text="Refresh">
+               <FlowPane.margin>
+                  <Insets left="20.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <ComboBox fx:id="users" prefWidth="150.0" promptText="Users">
+               <FlowPane.margin>
+                  <Insets left="10.0" top="10.0" />
+               </FlowPane.margin>
+            </ComboBox>
+            <ListView fx:id="history" prefHeight="200.0" prefWidth="400.0">
+               <FlowPane.margin>
+                  <Insets left="20.0" top="10.0" />
+               </FlowPane.margin>
+            </ListView>
+         </children>
+      </FlowPane>
+   </center>
 </BorderPane>
