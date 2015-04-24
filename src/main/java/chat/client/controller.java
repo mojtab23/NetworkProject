@@ -1,21 +1,16 @@
 package chat.client;
 
 import chat.ChatServer;
-import chat.User;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Mojtaba on 4/19/2015.
@@ -34,35 +29,22 @@ public class Controller {
     @FXML
     public Label status;
     @FXML
-    public ComboBox<String> users;
-    @FXML
-    public ListView<String> history = new ListView<>();
+    public ListView<String> history;
 
 
     private ReliableUDPChatClient client;
-    private ObservableMap<String, User> userMap;
-    private ObservableList<String> entries;
+//    private ObservableMap<String, User> userMap;
 
 
-    @FXML
-    public void initialize() {
-        userMap = FXCollections.observableHashMap();
-        updateComboBox();
-    }
-
-    private void updateComboBox() {
-//        entries = FXCollections.observableArrayList(userMap.keySet());
-        entries = FXCollections.observableArrayList(
-                "chocolate", "salmon", "gold", "coral", "darkorchid",
-                "darkgoldenrod", "lightsalmon", "black", "rosybrown", "blue",
-                "blueviolet", "brown");
-        users = new ComboBox<>(entries);
-        users.setCellFactory(list -> new ColorRectCell());
-        users.getSelectionModel().selectFirst(); // Select first as default
-        users.getSelectionModel().selectedItemProperty().addListener((ov, old_val, new_val) -> {
-            history.setItems(FXCollections.observableArrayList(userMap.get(new_val).getChats()));
-        });
-    }
+//    @FXML
+//    public void initialize() {
+////        userMap = FXCollections.observableHashMap();
+//        updateComboBox();
+//    }
+//
+//    private void updateComboBox() {
+//
+//    }
 
     public void connect() {
         Thread thread = new Thread(() -> {
@@ -71,14 +53,16 @@ public class Controller {
 
                 if (client.connect(userName.getText().trim())) {
                     Platform.runLater(() -> {
+                        connectButton.setText("Connected");
                         connectButton.setDisable(true);
-                        userName.setDisable(true);
+
+//                        userName.setDisable(true);
                         status.setText("INFO: Connected...");
                     });
                     listen();
 
                     //list userMap
-                    refreshUsers();
+//                    refreshUsers();
                 } else {
                     Platform.runLater(() -> status.setText("ERROR: user name rejected. use another name..."));
                 }
@@ -115,15 +99,11 @@ public class Controller {
 
     private void redirect(String request) {
         Thread thread = new Thread(() -> {
-//            System.out.println(request);
             String header = request.substring(0, request.indexOf('\n'));
-            if (header.equalsIgnoreCase("list")) {
+            if (header.equalsIgnoreCase("chat")) {
                 String body = request.substring(request.indexOf('\n'));
-                updateUsers(body);
-            } else if (header.equalsIgnoreCase("chat")) {
-                String body = request.substring(request.indexOf('\n'));
-                userMap.get(body.substring(0, request.indexOf('\n')))
-                        .addChat(body.substring(request.indexOf('\n')));
+                String[] split = body.trim().split("\n");
+                Platform.runLater(() -> history.getItems().add(String.format("%s: %s", split[0], split[1])));
             } else if (header.equalsIgnoreCase("error")) {
                 String body = request.substring(request.indexOf('\n'));
                 status.setText(body);
@@ -134,23 +114,26 @@ public class Controller {
 
     }
 
-    private void updateUsers(String body) {
-//        System.out.println(userMap.size());
-        String[] userNames = body.trim().split("\n");
-        userMap.values().forEach(user -> user.setIsOnline(false));
-        for (String name : userNames) {
-            User user = userMap.get(name);
-            if (user != null) user.setIsOnline(true);
-            else userMap.put(name, new User(true));
-        }
-        List<String> rm = new ArrayList<>();
-        userMap.forEach((s, user) -> {
-            if (!user.isOnline()) rm.add(s);
-        });
-        for (String s : rm) userMap.remove(s);
-//        System.out.println(userMap.size());
-        updateComboBox();
-    }
+//    private void updateUsers(String body) {
+////        System.out.println(userMap.size());
+//        String[] userNames = body.trim().split("\n");
+//        userMap.values().forEach(user -> user.setIsOnline(false));
+//        for (String name : userNames) {
+//            User user = userMap.get(name);
+//            if (user != null) user.setIsOnline(true);
+//            else userMap.put(name, new User(true));
+//        }
+//        List<String> rm = new ArrayList<>();
+//        userMap.forEach((s, user) -> {
+//            if (!user.isOnline()) rm.add(s);
+//        });
+//        for (String s : rm) userMap.remove(s);
+////        System.out.println(userMap.size());
+//        Platform.runLater(() -> {
+//            users.getItems().clear();
+//            users.setItems(FXCollections.observableArrayList(userMap.keySet()));
+//        });
+//    }
 
 
     private String createString(InputStream receive) {
@@ -197,11 +180,12 @@ public class Controller {
         Thread thread = new Thread(() -> {
             try {
                 String s = "chat\n";
-                String userName = users.getSelectionModel().getSelectedItem();
-                s = s.concat(userName + "\n");
+//                String userName = users.getSelectionModel().getSelectedItem();
+//                s = s.concat(userName + "\n");
                 String chat = textInput.getText();
                 s = s.concat(chat);
-
+                //todo
+                System.out.println(s);
 
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 outputStream.write(s.getBytes());
@@ -209,7 +193,7 @@ public class Controller {
                 Platform.runLater(() -> {
                     try {
                         client.send(outputStream);
-                        userMap.get(userName).addChat(chat);
+                        history.getItems().add("me: " + chat);
                         textInput.clear();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -223,16 +207,5 @@ public class Controller {
         thread.start();
     }
 
-    static class ColorRectCell extends ListCell<String> {
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-            Rectangle rect = new Rectangle(100, 20);
-            if (item != null) {
-                rect.setFill(Color.web(item));
-                setGraphic(rect);
-            }
-        }
-    }
 
 }
