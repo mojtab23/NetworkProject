@@ -14,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ReliableUDPServer {
 
-    private int port;
     protected Map<Integer, Connection> clients = new ConcurrentHashMap<>();
     protected ConnectionHandler connectionHandler;
     protected DatagramSocket socket;
+    private int port;
 
     public ReliableUDPServer(int port) throws SocketException {
         socket = new DatagramSocket(port);

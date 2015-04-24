@@ -19,13 +19,14 @@ import java.util.concurrent.TimeUnit;
 public class ReliableUDPClient {
 
 
+    public static final int TIMEOUT = 50;
     protected InetAddress serverAddress;
     protected int serverPort;
     protected DatagramSocket socket;
     protected volatile boolean connectionIsOpen = false;
     protected int connectionId = 0;
-    private BlockingQueue<DataPacket> responsePackets = new ArrayBlockingQueue<>(10);
-    private BlockingQueue<DataPacket> ackPackets = new ArrayBlockingQueue<>(10);
+    private BlockingQueue<DataPacket> responsePackets = new ArrayBlockingQueue<>(1000);
+    private BlockingQueue<DataPacket> ackPackets = new ArrayBlockingQueue<>(1000);
     private long seq = 0;
 
     public ReliableUDPClient(InetAddress serverAddress, int serverPort) {
@@ -42,7 +43,7 @@ public class ReliableUDPClient {
             DatagramPacket request = new DatagramPacket(connectPacket.getBytes(),
                     connectPacket.getLimit(), serverAddress, serverPort);
 
-            socket.setSoTimeout(15);
+            socket.setSoTimeout(TIMEOUT);
             while (!connectionIsOpen) {
                 socket.send(request);
 
@@ -72,8 +73,9 @@ public class ReliableUDPClient {
                     try {
                         byte[] bytes = new byte[DataPacket.PACKET_SIZE];
                         DatagramPacket p = new DatagramPacket(bytes, DataPacket.PACKET_SIZE);
+                        socket.setSoTimeout(0);
                         socket.receive(p);
-                        System.out.println("received");
+//                        System.out.println("received");
                         byte[] bytes1 = Arrays.copyOf(p.getData(), p.getLength());
                         DataPacket responsePacket = new DataPacket(bytes1);
 
@@ -81,6 +83,8 @@ public class ReliableUDPClient {
                         else responsePackets.put(responsePacket);
 
                     } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+
                     }
                 }
             }
@@ -113,7 +117,7 @@ public class ReliableUDPClient {
         DataPacket poll;
         do {
             socket.send(request);
-            poll = ackPackets.poll(15, TimeUnit.MILLISECONDS);
+            poll = ackPackets.poll(TIMEOUT, TimeUnit.MILLISECONDS);
         } while (poll == null || poll.getSeq() != seq);
         seq++;
     }
@@ -131,9 +135,11 @@ public class ReliableUDPClient {
                     if (packet.getSize() == 0) hasNext = false;
                     sendAck(packetSeq);
                     packetSeq++;
+                    System.out.println("size = " + packet.getSize());
                 } else if (packet.getSeq() == packetSeq - 1) {
+                    System.out.println("late ack");
                     sendAck(packetSeq - 1);
-                }
+                } else System.out.println("else");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

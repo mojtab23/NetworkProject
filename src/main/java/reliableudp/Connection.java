@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Connection {
 
+    public static final int TIMEOUT = 50;
     private InetAddress address;
     private int port;
     //    private MyInputStream buffer;
@@ -112,9 +113,10 @@ public class Connection {
         int size = len / dataSize;
         seq = 0;
 
-        for (int i = 0; i < len - dataSize + 1; i += dataSize)
+        for (int i = 0; i < len - dataSize + 1; i += dataSize) {
             sendReliable(Arrays.copyOfRange(bytes, i, i + dataSize), size);
-
+            size--;
+        }
         if (len % dataSize != 0)
             sendReliable(Arrays.copyOfRange(bytes, len - len % dataSize, len), size);
 
@@ -128,7 +130,7 @@ public class Connection {
         DataPacket poll;
         do {
             socket.send(request);
-            poll = ackPackets.poll(15, TimeUnit.MILLISECONDS);
+            poll = ackPackets.poll(TIMEOUT, TimeUnit.MILLISECONDS);
         } while (poll == null || poll.getSeq() != seq);
         seq++;
     }

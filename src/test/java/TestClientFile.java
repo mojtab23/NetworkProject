@@ -20,7 +20,7 @@ public class TestClientFile {
             client.connect();
 
 
-            File file = new File("E:\\tamrin\\Intellij\\MojtabaFileManager\\UDP\\src\\test\\java\\plain2.jpg");
+            File file = new File("E:\\tamrin\\Intellij\\MojtabaFileManager\\UDP\\src\\test\\java\\p.jpg");
 
             FileInputStream fis = new FileInputStream(file);
             //System.out.println(file.exists() + "!!");

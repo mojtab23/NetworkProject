@@ -26,7 +26,7 @@ public class ReliableUDPChatClient extends ReliableUDPClient {
             DatagramPacket request = new DatagramPacket(connectPacket.getBytes(),
                     connectPacket.getLimit(), serverAddress, serverPort);
 
-            socket.setSoTimeout(15);
+            socket.setSoTimeout(TIMEOUT);
             while (!connectionIsOpen) {
                 socket.send(request);
 

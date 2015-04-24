@@ -29,7 +29,7 @@ public class ReliableUDPChatServer extends ReliableUDPServer {
         Connection connection = new Connection(super.socket, address, port);
         //if connection exist.
         final boolean[] exist = {false};
-        String userName = new String(packet.getData());
+        String userName = new String(packet.getData(), 0, packet.getLimit() - DataPacket.HEADER_SIZE);
         if (!(exist[0] = users.containsKey(userName))) {
             exist[0] = clients.entrySet().stream().anyMatch(integerConnectionEntry -> {
                 connectionId[0] = integerConnectionEntry.getKey();
@@ -42,7 +42,7 @@ public class ReliableUDPChatServer extends ReliableUDPServer {
             connection.setConnectionId(connectionId[0]);
             clients.put(connectionId[0], connection);
             users.put(userName, new User(connection));
-            connectionHandler.handleConnection(connection, users,userName);
+            connectionHandler.handleConnection(connection, users, userName);
         }
 
         sendConnectionAccept(address, port, connectionId[0]);
